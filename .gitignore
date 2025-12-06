@@ -22,6 +22,7 @@ htmlcov/
 out/
 cache/
 broadcast/
+lib/
 
 # environment
 .env
