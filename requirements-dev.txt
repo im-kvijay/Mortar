@@ -1,0 +1,82 @@
+# Mortar-C Development Requirements
+# Testing, debugging, and development tools
+# Generated: 2025-12-02
+
+# Install production dependencies first
+-r requirements.txt
+
+# ============================================================================
+# TESTING FRAMEWORK
+# ============================================================================
+
+# Pytest Core
+pytest==8.3.4
+
+# Async Testing Support
+pytest-asyncio==0.24.0
+
+# Coverage Reporting
+pytest-cov==6.0.0
+
+# Test Coverage
+coverage==7.6.9
+
+# ============================================================================
+# MOCKING & FIXTURES
+# ============================================================================
+
+# Mock Objects (included in unittest, but explicit for clarity)
+# unittest.mock is part of stdlib in Python 3.11+
+
+# ============================================================================
+# CODE QUALITY
+# ============================================================================
+
+# Type Checking
+mypy==1.13.0
+
+# Linting
+ruff==0.8.4
+
+# Code Formatting (optional, codebase doesn't use auto-formatter)
+# black==24.10.0
+
+# ============================================================================
+# DEBUGGING
+# ============================================================================
+
+# Interactive Debugger
+ipdb==0.13.13
+
+# IPython Enhanced REPL
+ipython==8.30.0
+
+# ============================================================================
+# DOCUMENTATION
+# ============================================================================
+
+# Markdown Support
+markdown==3.7
+
+# ============================================================================
+# PROFILING & PERFORMANCE
+# ============================================================================
+
+# Memory Profiler
+memory-profiler==0.61.0
+
+# Line Profiler
+line-profiler==4.2.0
+
+# Performance Testing
+pytest-benchmark==5.1.0
+
+# ============================================================================
+# UTILITIES
+# ============================================================================
+
+# Better Exception Handling
+better-exceptions==0.3.3
+
+# Enhanced Traceback
+tblib==3.0.0

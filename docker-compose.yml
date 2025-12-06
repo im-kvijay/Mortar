@@ -1,0 +1,142 @@
+# ============================================
+# Mortar-C Docker Compose Configuration
+# ============================================
+# Production-ready orchestration for Mortar-C auditor
+
+version: '3.8'
+
+services:
+  # ============================================
+  # Main Mortar-C Service
+  # ============================================
+  mortar:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mortar-c:latest
+    container_name: mortar-c
+
+    # Environment variables
+    env_file:
+      - .env
+    environment:
+      # Core settings
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+
+      # LLM Backend Configuration (override in .env)
+      - BACKEND=${BACKEND:-openrouter}
+      - MODEL=${MODEL:-x-ai/grok-4.1-fast}
+      - FORCE_GROK_FAST=${FORCE_GROK_FAST:-1}
+
+      # Execution Configuration
+      - OFFLINE_MODE=${OFFLINE_MODE:-0}
+      - POC_GEN_MODE=${POC_GEN_MODE:-ai}
+      - VERIFICATION_WORKERS=${VERIFICATION_WORKERS:-1}
+
+      # Timeout Configuration
+      - CONTRACT_TIMEOUT_SECONDS=${CONTRACT_TIMEOUT_SECONDS:-7200}
+      - AGENT_MAX_SECONDS=${AGENT_MAX_SECONDS:-1800}
+
+      # Feature Flags
+      - ENABLE_ECON_SIM=${ENABLE_ECON_SIM:-1}
+      - ENABLE_INVARIANT_FUZZ=${ENABLE_INVARIANT_FUZZ:-0}
+      - ENABLE_ADVERSARIAL_ENGINE=${ENABLE_ADVERSARIAL_ENGINE:-0}
+      - ENABLE_CONTEXT_COMPRESSION=${ENABLE_CONTEXT_COMPRESSION:-1}
+
+      # Knowledge Base Configuration
+      - FRESH_ANALYSIS=${FRESH_ANALYSIS:-0}
+      - KB_SUGGESTIONS_ADDITIVE=${KB_SUGGESTIONS_ADDITIVE:-1}
+
+      # Context Budgets
+      - CONTEXT_CHAR_BUDGET=${CONTEXT_CHAR_BUDGET:-6000}
+      - CONTEXT_SECTION_BUDGET=${CONTEXT_SECTION_BUDGET:-2000}
+      - CONTEXT_T_MAX=${CONTEXT_T_MAX:-250000}
+      - CONTEXT_T_RETAINED=${CONTEXT_T_RETAINED:-100000}
+
+    # Volume mounts
+    volumes:
+      # Data directory (read-write for outputs)
+      - ./data:/app/data
+
+      # Training datasets (read-only)
+      - ./training:/app/training:ro
+
+      # External contracts (read-only, mount on demand)
+      # - /path/to/contracts:/contracts:ro
+
+      # Optional: Mount foundry cache for faster builds
+      # - foundry-cache:/home/mortar/.foundry/cache
+
+    # Resource limits (adjust based on your system)
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 8G
+        reservations:
+          cpus: '2.0'
+          memory: 4G
+
+    # Restart policy
+    restart: unless-stopped
+
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+
+    # Read-only root filesystem (except mounted volumes)
+    # read_only: true
+
+    # Temporary filesystems for /tmp
+    tmpfs:
+      - /tmp:size=1G,mode=1777
+
+    # Network mode
+    network_mode: bridge
+
+    # Health check
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; from pathlib import Path; sys.exit(0 if Path('main.py').exists() else 1)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+    # Override command for interactive use
+    # command: --help
+    # command: --dvd 1
+    # command: --contract /contracts/MyContract.sol
+
+    # For interactive shell access
+    # stdin_open: true
+    # tty: true
+
+# ============================================
+# Named Volumes (Optional)
+# ============================================
+volumes:
+  # Foundry cache (speeds up repeated builds)
+  foundry-cache:
+    driver: local
+
+# ============================================
+# Networks (Optional)
+# ============================================
+networks:
+  default:
+    name: mortar-network
+    driver: bridge
+
+# ============================================
+# Usage Examples:
+# ============================================
+# Start service:           docker-compose up
+# Run in background:       docker-compose up -d
+# View logs:               docker-compose logs -f
+# Stop service:            docker-compose down
+# Rebuild image:           docker-compose build
+# Run specific command:    docker-compose run --rm mortar --dvd 1
+# Interactive shell:       docker-compose run --rm mortar /bin/bash
+# Run with fresh KB:       docker-compose run --rm -e FRESH_ANALYSIS=1 mortar --contract /contracts/MyContract.sol
+# Scale verification:      docker-compose run --rm -e VERIFICATION_WORKERS=4 mortar --project /contracts/my-project

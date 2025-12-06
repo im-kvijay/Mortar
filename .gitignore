@@ -1,0 +1,55 @@
+# python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ide
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# foundry
+out/
+cache/
+broadcast/
+
+# environment
+.env
+venv/
+env/
+
+# logs and data (runtime generated)
+*.log
+data/logs/
+data/cache/
+data/artifacts/
+data/reports/
+data/pocs/
+data/kb/*.json
+data/kb/*.sqlite*
+data/knowledge_graphs/*.json
+
+# training data (clone separately)
+training/
+
+# temp and backup files
+*.tmp
+*.temp
+*.backup
+*.bak*
+*.old
+*.orig
+*~
+
+# mortar cache
+.mortar_cache/
