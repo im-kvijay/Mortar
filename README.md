@@ -163,7 +163,3 @@ pytest tests/unit/ --cov=src
 - Foundry (forge, cast, anvil)
 - Slither (optional, for static analysis)
 - API key for OpenRouter, xAI, or Anthropic
-
-## License
-
-Proprietary.
